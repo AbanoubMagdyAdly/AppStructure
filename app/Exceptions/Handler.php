@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use App\Services\ResponseService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -25,7 +26,6 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
-
     /**
      * Report or log an exception.
      *
@@ -46,6 +46,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof AuthenticationException) {
+            return ResponseService::execute($exception->getCustomMessage(),
+                                            $exception->getErrorCode(),
+                                            false);
+        }
         return parent::render($request, $exception);
     }
 }
